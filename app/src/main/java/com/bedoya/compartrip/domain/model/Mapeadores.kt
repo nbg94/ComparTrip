@@ -1,0 +1,93 @@
+package com.bedoya.compartrip.domain.model
+
+import com.bedoya.compartrip.data.local.entity.*
+
+// ---- EntidadViaje ↔ Viaje ----
+
+fun EntidadViaje.aDominio(): Viaje {
+    return Viaje(
+        idViaje = idViaje,
+        idPublicador = idPublicador,
+        origen = origen,
+        destino = destino,
+        fecha = fecha,
+        tipo = TipoViaje.valueOf(tipo),       // convierte el String "COMPLETO" al enum TipoViaje.COMPLETO
+        plazasDisponibles = plazasDisponibles,
+        descripcion = descripcion,
+        precio = precio,
+        admiteFumadores = admiteFumadores,
+        generoPreferido = generoPreferido,
+        edadMinimaPreferida = edadMinimaPreferida,
+        edadMaximaPreferida = edadMaximaPreferida,
+        estado = EstadoViaje.valueOf(estado)
+    )
+}
+
+fun Viaje.aEntidad(): EntidadViaje {
+    return EntidadViaje(
+        idViaje = idViaje,
+        idPublicador = idPublicador,
+        origen = origen,
+        destino = destino,
+        fecha = fecha,
+        tipo = tipo.name,                     // convierte el enum TipoViaje.COMPLETO al String "COMPLETO"
+        plazasDisponibles = plazasDisponibles,
+        descripcion = descripcion,
+        precio = precio,
+        admiteFumadores = admiteFumadores,
+        generoPreferido = generoPreferido,
+        edadMinimaPreferida = edadMinimaPreferida,
+        edadMaximaPreferida = edadMaximaPreferida,
+        estado = estado.name
+    )
+}
+
+// ---- EntidadUsuario ↔ Usuario ----
+
+fun EntidadUsuario.aDominio(): Usuario {
+    return Usuario(
+        idUsuario = idUsuario,
+        nombre = nombre,
+        correo = correo,
+        urlFoto = urlFoto,
+        biografia = biografia,
+        valoracionMedia = valoracionMedia
+    )
+}
+
+fun Usuario.aEntidad(): EntidadUsuario {
+    return EntidadUsuario(
+        idUsuario = idUsuario,
+        nombre = nombre,
+        correo = correo,
+        urlFoto = urlFoto,
+        biografia = biografia,
+        valoracionMedia = valoracionMedia
+    )
+}
+
+// ---- EntidadMensaje ↔ Mensaje ----
+
+fun EntidadMensaje.aDominio(): Mensaje {
+    return Mensaje(
+        idMensaje = idMensaje,
+        idViaje = idViaje,
+        idEmisor = idEmisor,
+        idReceptor = idReceptor,
+        contenido = contenido,
+        enviadoEn = enviadoEn,
+        leido = leido
+    )
+}
+
+fun Mensaje.aEntidad(): EntidadMensaje {
+    return EntidadMensaje(
+        idMensaje = idMensaje,
+        idViaje = idViaje,
+        idEmisor = idEmisor,
+        idReceptor = idReceptor,
+        contenido = contenido,
+        enviadoEn = enviadoEn,
+        leido = leido
+    )
+}
