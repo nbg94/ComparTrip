@@ -21,15 +21,17 @@ class PublicarViajeViewModel @Inject constructor(
     private val _estado = MutableStateFlow(EstadoUiPublicar())
     val estado: StateFlow<EstadoUiPublicar> = _estado.asStateFlow()
 
-    // Cada función "al" corresponde a una acción del usuario en el formulario
     fun alCambiarOrigen(valor: String) = _estado.update { it.copy(origen = valor) }
     fun alCambiarDestino(valor: String) = _estado.update { it.copy(destino = valor) }
-    fun alCambiarFecha(valor: Long) = _estado.update { it.copy(fecha = valor) }
+    fun alCambiarFechaIda(valor: Long) = _estado.update { it.copy(fechaIda = valor) }
+    fun alCambiarFechaVuelta(valor: Long) = _estado.update { it.copy(fechaVuelta = valor) }
     fun alCambiarTipo(valor: TipoViaje) = _estado.update { it.copy(tipo = valor) }
     fun alCambiarPlazas(valor: String) = _estado.update { it.copy(plazas = valor) }
     fun alCambiarDescripcion(valor: String) = _estado.update { it.copy(descripcion = valor) }
     fun alCambiarPrecio(valor: String) = _estado.update { it.copy(precio = valor) }
     fun alCambiarFumadores(valor: Boolean) = _estado.update { it.copy(admiteFumadores = valor) }
+    fun alCambiarMascotas(valor: Boolean) = _estado.update { it.copy(admiteMascotas = valor) }
+    fun alCambiarSoloMujeres(valor: Boolean) = _estado.update { it.copy(soloMujeres = valor) }
 
     fun alPublicar(idUsuarioActual: String) {
         viewModelScope.launch {
@@ -39,8 +41,9 @@ class PublicarViajeViewModel @Inject constructor(
                     idPublicador = idUsuarioActual,
                     origen = _estado.value.origen,
                     destino = _estado.value.destino,
-                    fecha = _estado.value.fecha ?: System.currentTimeMillis(),
+                    fecha = _estado.value.fechaIda ?: System.currentTimeMillis(),
                     tipo = _estado.value.tipo,
+                    // plazas solo obligatorio si es TRANSPORTE
                     plazasDisponibles = _estado.value.plazas.toIntOrNull() ?: 1,
                     descripcion = _estado.value.descripcion,
                     precio = _estado.value.precio.toDoubleOrNull(),
@@ -54,4 +57,3 @@ class PublicarViajeViewModel @Inject constructor(
         }
     }
 }
-
