@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.bedoya.compartrip.SesionUsuario
 import com.bedoya.compartrip.domain.model.TipoViaje
 import com.bedoya.compartrip.ui.screens.PublicarViajeViewModel
 import com.bedoya.compartrip.ui.theme.CremeFondo
@@ -276,7 +277,7 @@ fun PantallaPublicarViaje(
                 ) { Text("Cancelar") }
 
                 Button(
-                    onClick = { viewModel.alPublicar("usuario_temporal") },
+                    onClick = { viewModel.alPublicar(SesionUsuario.idActual) },
                     modifier = Modifier.weight(1f).height(50.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = VerdeTurquesa),

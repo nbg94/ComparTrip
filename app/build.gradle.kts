@@ -19,7 +19,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Auth0 — necesario para el callback de login
-        manifestPlaceholders["auth0Domain"] = "TU_DOMINIO.auth0.com"
+        manifestPlaceholders["auth0Domain"] = "dev-q2rs2edunh7t5so5.eu.auth0.com"
         manifestPlaceholders["auth0Scheme"] = "demo"
     }
 

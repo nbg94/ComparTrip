@@ -8,7 +8,7 @@ val VerdeTurquesaOscuro = Color(0xFF2E9E8A)
 val VerdeTurquesaClaro = Color(0xFFE8F7F5)
 val VerdeTurquesaContainer = Color(0xFFB2EBE3)
 
-val CremeFondo = Color(0xFFF5F59F)
+val CremeFondo = Color(0xFFEEEEC2)
 //val CremeFondo = Color(0xFFFAF4DE)
 val GrisTexto = Color(0xFF555555)
 val GrisClaro = Color(0xFFF5F5F5)

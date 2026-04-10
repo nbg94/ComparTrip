@@ -1,6 +1,8 @@
 package com.bedoya.compartrip.di
 
+import com.bedoya.compartrip.data.local.dao.DaoUsuario
 import com.bedoya.compartrip.data.local.dao.DaoViaje
+import com.bedoya.compartrip.data.repository.RepositorioUsuario
 import com.bedoya.compartrip.data.repository.RepositorioViaje
 import dagger.Module
 import dagger.Provides
@@ -15,8 +17,12 @@ object ModuloRepositorio {
     @Provides
     @Singleton
     fun proveerRepositorioViaje(
-        daoViaje: DaoViaje   // Hilt ya sabe crear DaoViaje (lo definimos en ModuloBaseDatos)
-    ): RepositorioViaje {
-        return RepositorioViaje(daoViaje)
-    }
+        daoViaje: DaoViaje
+    ): RepositorioViaje = RepositorioViaje(daoViaje)
+
+    @Provides
+    @Singleton
+    fun proveerRepositorioUsuario(
+        daoUsuario: DaoUsuario
+    ): RepositorioUsuario = RepositorioUsuario(daoUsuario)
 }
