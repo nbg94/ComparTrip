@@ -33,5 +33,11 @@ data class EntidadViaje(
     val edadMinimaPreferida: Int? = null,
     val edadMaximaPreferida: Int? = null,
     val estado: String = "ACTIVO",
-    val creadoEn: Long = System.currentTimeMillis()
+    val creadoEn: Long = System.currentTimeMillis(),
+    val admiteMascotas: Boolean = false,
+    val soloMujeres: Boolean = false,
+    val soloHombres: Boolean = false,
+    val edadMinima: Int? = null,
+    val edadMaxima: Int? = null,
+    val urlsFotos: String = ""
 )

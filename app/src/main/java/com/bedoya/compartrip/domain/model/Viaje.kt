@@ -14,7 +14,13 @@ data class Viaje(
     val generoPreferido: String? = null,
     val edadMinimaPreferida: Int? = null,
     val edadMaximaPreferida: Int? = null,
-    val estado: EstadoViaje = EstadoViaje.ACTIVO
+    val estado: EstadoViaje = EstadoViaje.ACTIVO,
+    val admiteMascotas: Boolean = false,
+    val soloMujeres: Boolean = false,
+    val soloHombres: Boolean = false,
+    val edadMinima: Int? = null,
+    val edadMaxima: Int? = null,
+    val urlsFotos: List<String> = emptyList()
 )
 
 // Enum → en vez de Strings sueltos ("ACTIVO", "CANCELADO") usamos valores controlados

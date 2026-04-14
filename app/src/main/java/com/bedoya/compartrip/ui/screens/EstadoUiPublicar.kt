@@ -12,8 +12,11 @@ data class EstadoUiPublicar(
     val descripcion: String = "",
     val precio: String = "",
     val admiteFumadores: Boolean = false,
-    val admiteMascotas: Boolean = false,  // nueva
-    val soloMujeres: Boolean = false,     // nueva — preferencia de género
+    val admiteMascotas: Boolean = false,
+    val soloMujeres: Boolean = false,     // — preferencia de género
+    val soloHombres: Boolean = false,
+    val edadMinima: String = "",
+    val edadMaxima: String = "",
     val estaCargando: Boolean = false,
     val error: String? = null,
     val publicadoConExito: Boolean = false

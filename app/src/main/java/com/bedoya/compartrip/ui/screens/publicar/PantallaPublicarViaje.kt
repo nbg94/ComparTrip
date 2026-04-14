@@ -245,6 +245,45 @@ fun PantallaPublicarViaje(
                         activado = estado.soloMujeres,
                         alCambiar = viewModel::alCambiarSoloMujeres
                     )
+                    // Dentro del Card de preferencias, después de soloMujeres:
+                    HorizontalDivider(color = VerdeTurquesa.copy(alpha = 0.2f))
+                    FilaPreferencia(
+                        texto = "👨 Solo hombres",
+                        activado = estado.soloHombres,
+                        alCambiar = viewModel::alCambiarSoloHombres
+                    )
+                    HorizontalDivider(color = VerdeTurquesa.copy(alpha = 0.2f))
+
+// Rango de edades
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("🎂 Rango de edad (opcional)",
+                            style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = estado.edadMinima,
+                            onValueChange = viewModel::alCambiarEdadMinima,
+                            label = { Text("Edad mín.") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                            suffix = { Text("años") }
+                        )
+                        OutlinedTextField(
+                            value = estado.edadMaxima,
+                            onValueChange = viewModel::alCambiarEdadMaxima,
+                            label = { Text("Edad máx.") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                            suffix = { Text("años") }
+                        )
+                    }
                 }
             }
 

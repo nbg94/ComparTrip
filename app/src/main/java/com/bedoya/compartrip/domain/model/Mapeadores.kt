@@ -11,15 +11,23 @@ fun EntidadViaje.aDominio(): Viaje {
         origen = origen,
         destino = destino,
         fecha = fecha,
-        tipo = TipoViaje.valueOf(tipo),       // convierte el String "COMPLETO" al enum TipoViaje.COMPLETO
+        tipo = TipoViaje.valueOf(tipo),
         plazasDisponibles = plazasDisponibles,
         descripcion = descripcion,
         precio = precio,
         admiteFumadores = admiteFumadores,
+        admiteMascotas = admiteMascotas,
+        soloMujeres = soloMujeres,
+        soloHombres = soloHombres,
+        edadMinima = edadMinima,
+        edadMaxima = edadMaxima,
         generoPreferido = generoPreferido,
         edadMinimaPreferida = edadMinimaPreferida,
         edadMaximaPreferida = edadMaximaPreferida,
-        estado = EstadoViaje.valueOf(estado)
+        estado = EstadoViaje.valueOf(estado),
+        urlsFotos = if (urlsFotos.isBlank()) emptyList()
+        else urlsFotos.split(",")
+        // guardamos las fotos como "url1,url2,url3" y las separamos al leer
     )
 }
 
@@ -30,15 +38,21 @@ fun Viaje.aEntidad(): EntidadViaje {
         origen = origen,
         destino = destino,
         fecha = fecha,
-        tipo = tipo.name,                     // convierte el enum TipoViaje.COMPLETO al String "COMPLETO"
+        tipo = tipo.name,
         plazasDisponibles = plazasDisponibles,
         descripcion = descripcion,
         precio = precio,
         admiteFumadores = admiteFumadores,
+        admiteMascotas = admiteMascotas,
+        soloMujeres = soloMujeres,
+        soloHombres = soloHombres,
+        edadMinima = edadMinima,
+        edadMaxima = edadMaxima,
         generoPreferido = generoPreferido,
         edadMinimaPreferida = edadMinimaPreferida,
         edadMaximaPreferida = edadMaximaPreferida,
-        estado = estado.name
+        estado = estado.name,
+        urlsFotos = urlsFotos.joinToString(",")
     )
 }
 

@@ -18,13 +18,15 @@ object ModuloBaseDatos {
     @Provides                    // @Provides = "así se crea este objeto"
     @Singleton                   // @Singleton = solo se crea una vez en toda la app
     fun proveerBaseDatos(
-        @ApplicationContext contexto: Context   // Hilt inyecta el Context automáticamente
+        @ApplicationContext contexto: Context
     ): CompartripBaseDatos {
         return Room.databaseBuilder(
             contexto,
             CompartripBaseDatos::class.java,
             "compartrip_bd"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     @Provides

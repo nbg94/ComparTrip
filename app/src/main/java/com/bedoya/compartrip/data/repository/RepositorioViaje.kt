@@ -21,6 +21,9 @@ class RepositorioViaje(
     fun obtenerViajesPorUsuario(idUsuario: String): Flow<List<EntidadViaje>> =
         daoViaje.obtenerPorUsuario(idUsuario)
 
+    fun obtenerViajePorId(idViaje: Int): Flow<EntidadViaje?> =
+        daoViaje.obtenerPorId(idViaje)
+
     suspend fun guardarViaje(viaje: EntidadViaje) =
         daoViaje.insertar(viaje)
 
