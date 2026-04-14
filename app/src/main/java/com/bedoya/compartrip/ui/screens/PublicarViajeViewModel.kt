@@ -45,6 +45,22 @@ class PublicarViajeViewModel @Inject constructor(
 
     fun alCambiarEdadMaxima(valor: String) = _estado.update { it.copy(edadMaxima = valor) }
 
+    fun alAgregarFoto(uri: String) {
+        if (_estado.value.fotosUri.size >= 5) return  // máximo 5 fotos
+        _estado.update { it.copy(fotosUri = it.fotosUri + uri) }
+    }
+
+    fun alEliminarFoto(uri: String) {
+        val nuevaLista = _estado.value.fotosUri - uri
+        val nuevoIndice = _estado.value.indiceFotoPortada.coerceAtMost(
+            (nuevaLista.size - 1).coerceAtLeast(0)
+        )
+        _estado.update { it.copy(fotosUri = nuevaLista, indiceFotoPortada = nuevoIndice) }
+    }
+
+    fun alElegirPortada(indice: Int) =
+        _estado.update { it.copy(indiceFotoPortada = indice) }
+
     fun alPublicar(idUsuarioActual: String) {
         viewModelScope.launch {
             _estado.update { it.copy(estaCargando = true, error = null) }
@@ -64,7 +80,8 @@ class PublicarViajeViewModel @Inject constructor(
                     soloMujeres = _estado.value.soloMujeres,
                     soloHombres = _estado.value.soloHombres,
                     edadMinima = _estado.value.edadMinima.toIntOrNull(),
-                    edadMaxima = _estado.value.edadMaxima.toIntOrNull()
+                    edadMaxima = _estado.value.edadMaxima.toIntOrNull(),
+                    urlsFotos = _estado.value.fotosUri
                 )
                 publicarViaje.ejecutar(viaje)
                 _estado.update { it.copy(estaCargando = false, publicadoConExito = true) }

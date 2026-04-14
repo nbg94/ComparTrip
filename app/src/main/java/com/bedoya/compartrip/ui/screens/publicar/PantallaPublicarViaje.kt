@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bedoya.compartrip.SesionUsuario
 import com.bedoya.compartrip.domain.model.TipoViaje
 import com.bedoya.compartrip.ui.screens.PublicarViajeViewModel
+import com.bedoya.compartrip.ui.components.SelectorFotos
 import com.bedoya.compartrip.ui.theme.CremeFondo
 import com.bedoya.compartrip.ui.theme.VerdeTurquesa
 import com.bedoya.compartrip.ui.theme.VerdeTurquesaClaro
@@ -254,7 +255,7 @@ fun PantallaPublicarViaje(
                     )
                     HorizontalDivider(color = VerdeTurquesa.copy(alpha = 0.2f))
 
-// Rango de edades
+                    // Rango de edades
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -303,6 +304,17 @@ fun PantallaPublicarViaje(
                     )
                 }
             }
+
+            HorizontalDivider(color = VerdeTurquesaClaro)
+
+            // ---- SECCIÓN: Fotos ----
+            SelectorFotos(
+                fotos = estado.fotosUri,
+                indiceFotoPortada = estado.indiceFotoPortada,
+                alAgregarFoto = viewModel::alAgregarFoto,
+                alEliminarFoto = viewModel::alEliminarFoto,
+                alElegirPortada = viewModel::alElegirPortada
+            )
 
             // ---- Botones ----
             Row(

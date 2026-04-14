@@ -17,6 +17,8 @@ data class EstadoUiPublicar(
     val soloHombres: Boolean = false,
     val edadMinima: String = "",
     val edadMaxima: String = "",
+    val fotosUri: List<String> = emptyList(),   // URIs de las fotos seleccionadas
+    val indiceFotoPortada: Int = 0,
     val estaCargando: Boolean = false,
     val error: String? = null,
     val publicadoConExito: Boolean = false

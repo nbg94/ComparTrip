@@ -25,6 +25,12 @@ import com.bedoya.compartrip.domain.model.Usuario
 import com.bedoya.compartrip.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,29 +104,35 @@ private fun ContenidoDetalle(
             .padding(paddingInterno)
             .verticalScroll(rememberScrollState())
     ) {
-        // ---- Cabecera con origen → destino ----
+        // ---- Carrusel o cabecera ----
+        if (viaje.urlsFotos.isNotEmpty()) {
+            CarruselFotos(fotos = viaje.urlsFotos)
+        }
+
+        // Origen → destino siempre visible
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(VerdeTurquesa)
-                .padding(24.dp)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = "${viaje.origen}  →  ${viaje.destino}",
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = formato.format(Date(viaje.fecha)),
                     style = MaterialTheme.typography.bodyMedium,
                     color = VerdeTurquesaClaro
                 )
-                Spacer(modifier = Modifier.height(12.dp))
-                // Chip de tipo
+                Spacer(modifier = Modifier.height(8.dp))
                 Surface(
                     shape = RoundedCornerShape(20.dp),
                     color = VerdeTurquesaOscuro
@@ -327,5 +339,48 @@ private fun FilaPreferencia(etiqueta: String, activado: Boolean) {
             style = MaterialTheme.typography.bodyMedium,
             color = if (activado) VerdeTurquesa else GrisTexto
         )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun CarruselFotos(fotos: List<String>) {
+    val pagerState = rememberPagerState(pageCount = { fotos.size })
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(220.dp)
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { pagina ->
+            AsyncImage(
+                model = fotos[pagina],
+                contentDescription = "Foto ${pagina + 1}",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        // Puntos indicadores
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            fotos.indices.forEach { indice ->
+                Box(
+                    modifier = Modifier
+                        .size(if (indice == pagerState.currentPage) 10.dp else 6.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (indice == pagerState.currentPage) Color.White
+                            else Color.White.copy(alpha = 0.5f)
+                        )
+                )
+            }
+        }
     }
 }
