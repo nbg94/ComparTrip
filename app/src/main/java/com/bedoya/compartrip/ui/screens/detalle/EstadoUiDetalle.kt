@@ -8,5 +8,8 @@ data class EstadoUiDetalle(
     val publicador: Usuario? = null,
     val estaCargando: Boolean = true,
     val error: String? = null,
-    val solicitudEnviada: Boolean = false
+    val solicitudEnviada: Boolean = false,
+    val distanciaKm: Double? = null,
+    val duracionMinutos: Double? = null,
+    val cargandoRuta: Boolean = false
 )

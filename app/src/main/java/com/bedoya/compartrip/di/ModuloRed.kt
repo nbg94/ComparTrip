@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -19,12 +20,9 @@ object ModuloRed {
     @Singleton
     fun proveerOkHttp(): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(
-                HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                }
-            )
-            // Nominatim requiere un User-Agent para identificar la app
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
                     .header("User-Agent", "Compartrip/1.0 (Android)")
@@ -36,17 +34,33 @@ object ModuloRed {
 
     @Provides
     @Singleton
-    fun proveerRetrofit(clienteHttp: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
+    @Named("nominatim")
+    fun proveerRetrofitNominatim(clienteHttp: OkHttpClient): Retrofit =
+        Retrofit.Builder()
             .baseUrl("https://nominatim.openstreetmap.org/")
             .client(clienteHttp)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
 
     @Provides
     @Singleton
-    fun proveerServicioApi(retrofit: Retrofit): ServicioApi {
-        return retrofit.create(ServicioApi::class.java)
-    }
+    @Named("ors")
+    fun proveerRetrofitORS(clienteHttp: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://api.openrouteservice.org/")
+            .client(clienteHttp)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    @Provides
+    @Singleton
+    @Named("servicioNominatim")
+    fun proveerServicioNominatim(@Named("nominatim") retrofit: Retrofit): ServicioApi =
+        retrofit.create(ServicioApi::class.java)
+
+    @Provides
+    @Singleton
+    @Named("servicioORS")
+    fun proveerServicioORS(@Named("ors") retrofit: Retrofit): ServicioApi =
+        retrofit.create(ServicioApi::class.java)
 }

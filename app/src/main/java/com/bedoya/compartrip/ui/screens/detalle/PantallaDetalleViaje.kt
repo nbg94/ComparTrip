@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -82,6 +83,7 @@ fun PantallaDetalleViaje(
                 ContenidoDetalle(
                     viaje = estado.viaje!!,
                     publicador = estado.publicador,
+                    estado = estado,
                     paddingInterno = paddingInterno
                 )
             }
@@ -93,6 +95,7 @@ fun PantallaDetalleViaje(
 private fun ContenidoDetalle(
     viaje: Viaje,
     publicador: Usuario?,
+    estado: EstadoUiDetalle,
     paddingInterno: PaddingValues
 ) {
     val formato = SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))
@@ -184,6 +187,40 @@ private fun ContenidoDetalle(
                     )
                 }
             }
+
+                // ---- Distancia y duración ---- añade desde aquí
+                if (estado.cargandoRuta) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = VerdeTurquesa
+                            )
+                            Text(
+                                "Calculando ruta...",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = GrisTexto
+                            )
+                        }
+                    }
+                }
+                if (estado.distanciaKm != null && estado.duracionMinutos != null) {
+                    TarjetaRuta(
+                        distanciaKm = estado.distanciaKm!!,
+                        duracionMinutos = estado.duracionMinutos!!
+                    )
+                }
+
 
             // ---- Descripción ----
             if (viaje.descripcion.isNotBlank()) {
@@ -378,6 +415,54 @@ private fun CarruselFotos(fotos: List<String>) {
                             else Color.White.copy(alpha = 0.5f)
                         )
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TarjetaRuta(distanciaKm: Double, duracionMinutos: Double) {
+    val horas = (duracionMinutos / 60).toInt()
+    val minutos = (duracionMinutos % 60).toInt()
+    val duracionTexto = if (horas > 0) "${horas}h ${minutos}min" else "${minutos}min"
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("📍", fontSize = 24.sp)
+                Text(
+                    "${String.format("%.0f", distanciaKm)} km",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = VerdeTurquesa
+                )
+                Text("Distancia",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = GrisTexto)
+            }
+            VerticalDivider(modifier = Modifier.height(48.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("⏱️", fontSize = 24.sp)
+                Text(
+                    duracionTexto,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = VerdeTurquesa
+                )
+                Text("Duración estimada",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = GrisTexto)
             }
         }
     }
