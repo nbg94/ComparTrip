@@ -76,7 +76,7 @@ class PerfilViewModel @Inject constructor(
         viewModelScope.launch {
             val usuarioActual = _estado.value.usuario ?: return@launch
             val actualizado = usuarioActual.copy(urlFoto = uri)
-            repositorioUsuario.guardarUsuario(actualizado.aEntidad())
+            repositorioUsuario.actualizarUsuario(actualizado.aEntidad())  // ← cambia
         }
     }
 
@@ -84,7 +84,7 @@ class PerfilViewModel @Inject constructor(
         viewModelScope.launch {
             val usuarioActual = _estado.value.usuario ?: return@launch
             val actualizado = usuarioActual.copy(biografia = nuevaBio)
-            repositorioUsuario.guardarUsuario(actualizado.aEntidad())
+            repositorioUsuario.actualizarUsuario(actualizado.aEntidad())  // ← cambia
         }
     }
 
@@ -105,7 +105,8 @@ class PerfilViewModel @Inject constructor(
         viewModelScope.launch {
             val usuarioActual = _estado.value.usuario ?: return@launch
             val actualizado = usuarioActual.copy(dniVerificado = true)
-            repositorioUsuario.guardarUsuario(actualizado.aEntidad())
+            // Usamos actualizar en vez de guardar para no disparar el CASCADE
+            repositorioUsuario.actualizarUsuario(actualizado.aEntidad())
             _estado.update { it.copy(mostrarDialogoVerificacion = false) }
         }
     }

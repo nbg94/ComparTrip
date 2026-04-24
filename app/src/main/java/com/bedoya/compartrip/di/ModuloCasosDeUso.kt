@@ -4,6 +4,8 @@ import com.bedoya.compartrip.data.repository.RepositorioViaje
 import com.bedoya.compartrip.domain.usecase.BuscarViajesUseCase
 import com.bedoya.compartrip.domain.usecase.ObtenerViajesUseCase
 import com.bedoya.compartrip.domain.usecase.PublicarViajeUseCase
+import com.bedoya.compartrip.data.repository.RepositorioReserva
+import com.bedoya.compartrip.domain.usecase.SolicitarViajeUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +33,10 @@ object ModuloCasosDeUso {
     fun proveerBuscarViajesUseCase(
         repositorio: RepositorioViaje
     ): BuscarViajesUseCase = BuscarViajesUseCase(repositorio)
+
+    @Provides
+    @Singleton
+    fun proveerSolicitarViajeUseCase(
+        repositorio: RepositorioReserva
+    ): SolicitarViajeUseCase = SolicitarViajeUseCase(repositorio)
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +30,7 @@ import com.bedoya.compartrip.domain.model.EstadoViaje
 import com.bedoya.compartrip.domain.model.TipoViaje
 import com.bedoya.compartrip.domain.model.Viaje
 import com.bedoya.compartrip.domain.model.Usuario
+import com.bedoya.compartrip.SesionUsuario
 import com.bedoya.compartrip.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -44,6 +46,34 @@ fun PantallaDetalleViaje(
 
     LaunchedEffect(idViaje) {
         viewModel.cargarViaje(idViaje)
+    }
+
+    // ---- Diálogo solicitar unirse ----
+    if (estado.mostrarDialogoSolicitud) {
+        AlertDialog(
+            onDismissRequest = viewModel::alCerrarDialogoSolicitud,
+            icon = { Text("✈️", fontSize = 32.sp) },
+            title = { Text("Solicitar unirse al viaje") },
+            text = {
+                Text(
+                    "¿Confirmas que quieres unirte al viaje de " +
+                            "${estado.viaje?.origen} a ${estado.viaje?.destino}?\n\n" +
+                            "El publicador recibirá tu solicitud y podrá aceptarla o rechazarla.",
+                    textAlign = TextAlign.Center
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = viewModel::alConfirmarSolicitud,
+                    colors = ButtonDefaults.buttonColors(containerColor = VerdeTurquesa)
+                ) { Text("Confirmar") }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::alCerrarDialogoSolicitud) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 
     Scaffold(
@@ -84,7 +114,8 @@ fun PantallaDetalleViaje(
                     viaje = estado.viaje!!,
                     publicador = estado.publicador,
                     estado = estado,
-                    paddingInterno = paddingInterno
+                    paddingInterno = paddingInterno,
+                    alSolicitarUnirse = viewModel::alPulsarSolicitarUnirse
                 )
             }
         }
@@ -96,7 +127,8 @@ private fun ContenidoDetalle(
     viaje: Viaje,
     publicador: Usuario?,
     estado: EstadoUiDetalle,
-    paddingInterno: PaddingValues
+    paddingInterno: PaddingValues,
+    alSolicitarUnirse: () -> Unit
 ) {
     val formato = SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))
 
@@ -298,19 +330,49 @@ private fun ContenidoDetalle(
             // ---- Botones de acción ----
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = { /* TODO: solicitar unirse */ },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = VerdeTurquesa)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Solicitar unirse", style = MaterialTheme.typography.labelLarge)
+            // ---- Botones de acción ----
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val esMiViaje = estado.viaje?.idPublicador == SesionUsuario.idActual
+
+            when {
+                esMiViaje -> {
+                    // El publicador ve un botón diferente
+                    OutlinedButton(
+                        onClick = { },
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Este es tu viaje publicado ✅")
+                    }
+                }
+                estado.estadoSolicitud == EstadoSolicitud.PENDIENTE -> {
+                    Button(
+                        onClick = { },
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = GrisTexto),
+                        enabled = false
+                    ) {
+                        Text("Solicitud enviada ⏳", style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+                else -> {
+                    Button(
+                        onClick = alSolicitarUnirse,
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = VerdeTurquesa)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Solicitar unirse", style = MaterialTheme.typography.labelLarge)
+                    }
+                }
             }
 
             OutlinedButton(
-                onClick = { /* TODO: abrir chat */ },
+                onClick = { /* TODO: chat */ },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {

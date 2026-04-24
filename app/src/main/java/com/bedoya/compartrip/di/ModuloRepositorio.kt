@@ -7,6 +7,8 @@ import com.bedoya.compartrip.data.repository.RepositorioCiudades
 import com.bedoya.compartrip.data.repository.RepositorioRutas
 import com.bedoya.compartrip.data.repository.RepositorioUsuario
 import com.bedoya.compartrip.data.repository.RepositorioViaje
+import com.bedoya.compartrip.data.local.dao.DaoReserva
+import com.bedoya.compartrip.data.repository.RepositorioReserva
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,4 +41,10 @@ object ModuloRepositorio {
     fun proveerRepositorioRutas(
         @Named("servicioORS") servicioApi: ServicioApi
     ): RepositorioRutas = RepositorioRutas(servicioApi)
+
+    @Provides
+    @Singleton
+    fun proveerRepositorioReserva(
+        daoReserva: DaoReserva
+    ): RepositorioReserva = RepositorioReserva(daoReserva)
 }

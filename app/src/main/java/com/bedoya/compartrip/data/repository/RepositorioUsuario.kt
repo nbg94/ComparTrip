@@ -12,5 +12,8 @@ class RepositorioUsuario(
 
     fun obtenerUsuario(id: String): Flow<EntidadUsuario?> =
         daoUsuario.obtenerPorId(id)
+
+    suspend fun actualizarUsuario(usuario: EntidadUsuario) =
+        daoUsuario.actualizar(usuario)
 }
 

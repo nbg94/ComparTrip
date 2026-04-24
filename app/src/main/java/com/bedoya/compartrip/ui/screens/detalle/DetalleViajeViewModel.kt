@@ -3,10 +3,12 @@ package com.bedoya.compartrip.ui.screens.detalle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bedoya.compartrip.ConfiguracionApi
+import com.bedoya.compartrip.SesionUsuario
 import com.bedoya.compartrip.data.repository.RepositorioRutas
 import com.bedoya.compartrip.data.repository.RepositorioUsuario
 import com.bedoya.compartrip.data.repository.RepositorioViaje
 import com.bedoya.compartrip.domain.model.aDominio
+import com.bedoya.compartrip.domain.usecase.SolicitarViajeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class DetalleViajeViewModel @Inject constructor(
     private val repositorioViaje: RepositorioViaje,
     private val repositorioUsuario: RepositorioUsuario,
-    private val repositorioRutas: RepositorioRutas
+    private val repositorioRutas: RepositorioRutas,
+    private val solicitarViaje: SolicitarViajeUseCase
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow(EstadoUiDetalle())
@@ -34,14 +37,37 @@ class DetalleViajeViewModel @Inject constructor(
                 }
                 val viaje = entidad.aDominio()
                 _estado.update { it.copy(viaje = viaje, estaCargando = false) }
-
-                // Calculamos la ruta entre origen y destino
                 calcularRuta(viaje.origen, viaje.destino)
-
                 repositorioUsuario.obtenerUsuario(viaje.idPublicador).collect { usuarioEntidad ->
                     _estado.update { it.copy(publicador = usuarioEntidad?.aDominio()) }
                 }
             }
+        }
+    }
+
+    fun alPulsarSolicitarUnirse() {
+        // Si ya solicitó, no hace nada
+        if (_estado.value.estadoSolicitud != EstadoSolicitud.SIN_SOLICITAR) return
+        _estado.update { it.copy(mostrarDialogoSolicitud = true) }
+    }
+
+    fun alCerrarDialogoSolicitud() {
+        _estado.update { it.copy(mostrarDialogoSolicitud = false) }
+    }
+
+    fun alConfirmarSolicitud() {
+        val idViaje = _estado.value.viaje?.idViaje ?: return
+        viewModelScope.launch {
+            _estado.update { it.copy(mostrarDialogoSolicitud = false) }
+            val resultado = solicitarViaje.ejecutar(idViaje, SesionUsuario.idActual)
+            resultado.fold(
+                onSuccess = {
+                    _estado.update { it.copy(estadoSolicitud = EstadoSolicitud.PENDIENTE) }
+                },
+                onFailure = { error ->
+                    _estado.update { it.copy(error = error.message) }
+                }
+            )
         }
     }
 
@@ -50,21 +76,14 @@ class DetalleViajeViewModel @Inject constructor(
             android.util.Log.d("RUTA", "Calculando ruta: $origen → $destino")
             _estado.update { it.copy(cargandoRuta = true) }
             try {
-                // Primero geocodificamos origen y destino con Nominatim
-                // para obtener las coordenadas
                 val coordOrigen = geocodificar(origen) ?: run {
-                    android.util.Log.e("RUTA", "No se pudo geocodificar: $origen")
                     _estado.update { it.copy(cargandoRuta = false) }
                     return@launch
                 }
                 val coordDestino = geocodificar(destino) ?: run {
-                    android.util.Log.e("RUTA", "No se pudo geocodificar: $destino")
                     _estado.update { it.copy(cargandoRuta = false) }
                     return@launch
                 }
-
-                android.util.Log.d("RUTA", "Llamando a ORS con coords: $coordOrigen → $coordDestino")
-
                 val resultado = repositorioRutas.calcularRuta(
                     origenLat = coordOrigen.first,
                     origenLon = coordOrigen.second,
@@ -72,10 +91,8 @@ class DetalleViajeViewModel @Inject constructor(
                     destinoLon = coordDestino.second,
                     apiKey = ConfiguracionApi.ORS_KEY
                 )
-
                 resultado.fold(
                     onSuccess = { ruta ->
-                        android.util.Log.d("RUTA", "Ruta obtenida: ${ruta.rutas.firstOrNull()?.resumen?.distanciaMetros} m")
                         val resumen = ruta.rutas.firstOrNull()?.resumen
                         if (resumen != null) {
                             _estado.update {
@@ -87,9 +104,9 @@ class DetalleViajeViewModel @Inject constructor(
                             }
                         }
                     },
-                    onFailure = {
-                        android.util.Log.e("RUTA", "Error ORS: ${it.message}")
-                        _estado.update { it.copy(cargandoRuta = false) }
+                    onFailure = { throwable ->
+                        android.util.Log.e("RUTA", "Error ORS: ${throwable.message}")
+                        _estado.update { estado -> estado.copy(cargandoRuta = false) }
                     }
                 )
             } catch (e: Exception) {
@@ -100,37 +117,22 @@ class DetalleViajeViewModel @Inject constructor(
     }
 
     private suspend fun geocodificar(ciudad: String): Pair<Double, Double>? {
-        android.util.Log.d("RUTA", "Geocodificando: $ciudad")
         return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
             try {
                 val ciudadEncoded = java.net.URLEncoder.encode(ciudad.trim(), "UTF-8")
                 val url = "https://nominatim.openstreetmap.org/search?q=$ciudadEncoded&format=json&limit=1"
-                android.util.Log.d("RUTA", "URL: $url")
-
                 val client = okhttp3.OkHttpClient()
                 val request = okhttp3.Request.Builder()
                     .url(url)
                     .header("User-Agent", "Compartrip/1.0 (Android)")
                     .build()
                 val response = client.newCall(request).execute()
-                val body = response.body?.string() ?: run {
-                    android.util.Log.d("RUTA", "Body vacío para $ciudad")
-                    return@withContext null
-                }
-                android.util.Log.d("RUTA", "Respuesta: $body")
-
+                val body = response.body?.string() ?: return@withContext null
                 val json = org.json.JSONArray(body)
-                if (json.length() == 0) {
-                    android.util.Log.d("RUTA", "Sin resultados para $ciudad")
-                    return@withContext null
-                }
+                if (json.length() == 0) return@withContext null
                 val obj = json.getJSONObject(0)
-                val lat = obj.getString("lat").toDouble()
-                val lon = obj.getString("lon").toDouble()
-                android.util.Log.d("RUTA", "Coordenadas $ciudad: $lat, $lon")
-                Pair(lat, lon)
+                Pair(obj.getString("lat").toDouble(), obj.getString("lon").toDouble())
             } catch (e: Exception) {
-                android.util.Log.e("RUTA", "Error geocodificando $ciudad: ${e.message}")
                 null
             }
         }
