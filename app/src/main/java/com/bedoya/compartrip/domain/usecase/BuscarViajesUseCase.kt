@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 class BuscarViajesUseCase(
     private val repositorio: RepositorioViaje
 ) {
-    fun ejecutar(destino: String = "", tipo: String = ""): Flow<List<Viaje>> =
-        repositorio.buscarViajes(destino, tipo)
+    fun ejecutar(texto: String = "", tipo: String = "", modo: String = "DESTINO"): Flow<List<Viaje>> =
+        repositorio.buscarViajes(texto, tipo, modo)
             .map { lista -> lista.map { it.aDominio() } }
 }

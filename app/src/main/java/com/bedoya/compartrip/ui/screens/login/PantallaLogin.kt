@@ -21,7 +21,7 @@ import com.bedoya.compartrip.ui.theme.VerdeTurquesaClaro
 
 @Composable
 fun PantallaLogin(
-    alIniciarSesion: () -> Unit,
+    alIniciarSesion: (esNuevo: Boolean) -> Unit,  // ← recibe si es nuevo
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
@@ -30,9 +30,8 @@ fun PantallaLogin(
 
     // Cuando el login es exitoso navegamos al Home
     LaunchedEffect(estado.loginExitoso) {
-        if (estado.loginExitoso) alIniciarSesion()
+        if (estado.loginExitoso) alIniciarSesion(estado.esUsuarioNuevo)
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -42,7 +41,7 @@ fun PantallaLogin(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .height(230.dp)
                 .background(
                     VerdeTurquesa,
                     shape = RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp)
@@ -57,15 +56,15 @@ fun PantallaLogin(
             verticalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo_compartrip),
+                painter = painterResource(id = R.drawable.logo_compartrip_preview),
                 contentDescription = "Logo Compartrip",
                 modifier = Modifier.size(180.dp)
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(9.dp))
             Text(
                 text = "Comparte tu viaje,\ncomparte la experiencia",
                 style = MaterialTheme.typography.titleMedium,
-                color = VerdeTurquesaClaro,
+                color = VerdeTurquesa,
                 textAlign = TextAlign.Center
             )
 

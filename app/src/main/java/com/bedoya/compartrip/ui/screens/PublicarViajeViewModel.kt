@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.bedoya.compartrip.domain.model.TipoViaje
 import com.bedoya.compartrip.domain.model.Viaje
 import com.bedoya.compartrip.domain.usecase.PublicarViajeUseCase
+import com.bedoya.compartrip.data.repository.RepositorioCiudades
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PublicarViajeViewModel @Inject constructor(
-    private val publicarViaje: PublicarViajeUseCase
+    private val publicarViaje: PublicarViajeUseCase,
+    private val repositorioCiudades: RepositorioCiudades
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow(EstadoUiPublicar())
@@ -90,4 +92,9 @@ class PublicarViajeViewModel @Inject constructor(
             }
         }
     }
+
+    suspend fun buscarCiudades(texto: String) =
+        repositorioCiudades.buscarCiudades(texto).getOrDefault(emptyList())
+
+
 }

@@ -23,14 +23,22 @@ object ModuloRed {
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 }
-            ).build()
+            )
+            // Nominatim requiere un User-Agent para identificar la app
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .header("User-Agent", "Compartrip/1.0 (Android)")
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
     }
 
     @Provides
     @Singleton
     fun proveerRetrofit(clienteHttp: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://jsonplaceholder.typicode.com/")
+            .baseUrl("https://nominatim.openstreetmap.org/")
             .client(clienteHttp)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -40,6 +48,5 @@ object ModuloRed {
     @Singleton
     fun proveerServicioApi(retrofit: Retrofit): ServicioApi {
         return retrofit.create(ServicioApi::class.java)
-        // Retrofit genera la implementación de ServicioApi automáticamente
     }
 }

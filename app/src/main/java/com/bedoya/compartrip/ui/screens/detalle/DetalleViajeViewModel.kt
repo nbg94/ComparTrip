@@ -24,20 +24,16 @@ class DetalleViajeViewModel @Inject constructor(
 
     fun cargarViaje(idViaje: Int) {
         viewModelScope.launch {
-            // Recogemos el viaje de Room por su ID
             repositorioViaje.obtenerViajePorId(idViaje).collect { entidad ->
                 if (entidad == null) {
                     _estado.update { it.copy(estaCargando = false, error = "Viaje no encontrado") }
                     return@collect
                 }
-
                 val viaje = entidad.aDominio()
                 _estado.update { it.copy(viaje = viaje, estaCargando = false) }
 
-                // Cargamos también el perfil del publicador
                 repositorioUsuario.obtenerUsuario(viaje.idPublicador).collect { usuarioEntidad ->
-                    val publicador = usuarioEntidad?.aDominio()
-                    _estado.update { it.copy(publicador = publicador) }
+                    _estado.update { it.copy(publicador = usuarioEntidad?.aDominio()) }
                 }
             }
         }

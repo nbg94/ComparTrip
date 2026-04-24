@@ -65,7 +65,10 @@ fun EntidadUsuario.aDominio(): Usuario {
         correo = correo,
         urlFoto = urlFoto,
         biografia = biografia,
-        valoracionMedia = valoracionMedia
+        valoracionMedia = valoracionMedia,
+        totalViajes = totalViajes,
+        dniVerificado = dniVerificado,
+        creadoEn = creadoEn
     )
 }
 
@@ -76,7 +79,10 @@ fun Usuario.aEntidad(): EntidadUsuario {
         correo = correo,
         urlFoto = urlFoto,
         biografia = biografia,
-        valoracionMedia = valoracionMedia
+        valoracionMedia = valoracionMedia,
+        totalViajes = totalViajes,
+        dniVerificado = dniVerificado,
+        creadoEn = creadoEn
     )
 }
 

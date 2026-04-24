@@ -68,6 +68,7 @@ dependencies {
     // Room (base de datos local)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.compose.remote.creation.core)
     ksp(libs.androidx.room.compiler)   // KSP genera el código de Room automáticamente
 
     // Retrofit (API REST)

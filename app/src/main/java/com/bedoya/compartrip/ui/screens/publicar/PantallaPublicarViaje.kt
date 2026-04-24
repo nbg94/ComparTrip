@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bedoya.compartrip.SesionUsuario
 import com.bedoya.compartrip.domain.model.TipoViaje
 import com.bedoya.compartrip.ui.screens.PublicarViajeViewModel
+import com.bedoya.compartrip.ui.components.CampoAutocompletadoCiudad
 import com.bedoya.compartrip.ui.components.SelectorFotos
 import com.bedoya.compartrip.ui.theme.CremeFondo
 import com.bedoya.compartrip.ui.theme.VerdeTurquesa
@@ -95,17 +96,19 @@ fun PantallaPublicarViaje(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CampoTexto(
+                CampoAutocompletadoCiudad(
                     valor = estado.origen,
-                    alCambiar = viewModel::alCambiarOrigen,
                     etiqueta = "Origen",
+                    alCambiar = viewModel::alCambiarOrigen,
+                    alBuscarCiudades = viewModel::buscarCiudades,
                     modifier = Modifier.weight(1f),
                     hayError = estado.origen.isBlank() && estado.error != null
                 )
-                CampoTexto(
+                CampoAutocompletadoCiudad(
                     valor = estado.destino,
-                    alCambiar = viewModel::alCambiarDestino,
                     etiqueta = "Destino",
+                    alCambiar = viewModel::alCambiarDestino,
+                    alBuscarCiudades = viewModel::buscarCiudades,
                     modifier = Modifier.weight(1f),
                     hayError = estado.destino.isBlank() && estado.error != null
                 )

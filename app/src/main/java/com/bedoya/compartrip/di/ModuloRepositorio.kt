@@ -2,6 +2,8 @@ package com.bedoya.compartrip.di
 
 import com.bedoya.compartrip.data.local.dao.DaoUsuario
 import com.bedoya.compartrip.data.local.dao.DaoViaje
+import com.bedoya.compartrip.data.remote.api.ServicioApi
+import com.bedoya.compartrip.data.repository.RepositorioCiudades
 import com.bedoya.compartrip.data.repository.RepositorioUsuario
 import com.bedoya.compartrip.data.repository.RepositorioViaje
 import dagger.Module
@@ -25,4 +27,11 @@ object ModuloRepositorio {
     fun proveerRepositorioUsuario(
         daoUsuario: DaoUsuario
     ): RepositorioUsuario = RepositorioUsuario(daoUsuario)
+
+    @Provides
+    @Singleton
+    fun proveerRepositorioCiudades(
+        servicioApi: ServicioApi
+    ): RepositorioCiudades = RepositorioCiudades(servicioApi)
+
 }

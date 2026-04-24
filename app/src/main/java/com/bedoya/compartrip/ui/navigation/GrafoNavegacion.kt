@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.bedoya.compartrip.ui.screens.completarperfil.PantallaCompletarPerfil
 import com.bedoya.compartrip.ui.screens.home.PantallaHome
 import com.bedoya.compartrip.ui.screens.login.PantallaLogin
 import com.bedoya.compartrip.ui.screens.publicar.PantallaPublicarViaje
@@ -23,12 +24,27 @@ fun GrafoNavegacion(
     ) {
         composable(Destinos.Login.ruta) {
             PantallaLogin(
-                alIniciarSesion = {
-                    // al hacer login navegamos a Home y borramos Login de la pila
+                alIniciarSesion = { esNuevo ->
+                    if (esNuevo) {
+                        // Usuario nuevo → completar perfil primero
+                        controladorNav.navigate(Destinos.CompletarPerfil.ruta) {
+                            popUpTo(Destinos.Login.ruta) { inclusive = true }
+                        }
+                    } else {
+                        // Usuario existente → Home directamente
+                        controladorNav.navigate(Destinos.Home.ruta) {
+                            popUpTo(Destinos.Login.ruta) { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(Destinos.CompletarPerfil.ruta) {
+            PantallaCompletarPerfil(
+                alTerminar = {
                     controladorNav.navigate(Destinos.Home.ruta) {
                         popUpTo(Destinos.Login.ruta) { inclusive = true }
-                        // inclusive = true → borra también Login del backstack
-                        // así el usuario no puede volver al Login con el botón atrás
                     }
                 }
             )
@@ -72,7 +88,12 @@ fun GrafoNavegacion(
 
         composable(Destinos.Perfil.ruta) {
             PantallaPerfil(
-                alVolver = { controladorNav.popBackStack() }
+                alVolver = { controladorNav.popBackStack() },
+                alCerrarSesion = {
+                    controladorNav.navigate(Destinos.Login.ruta) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
     }

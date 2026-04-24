@@ -1,6 +1,7 @@
 package com.bedoya.compartrip.ui.screens.login
 
 import android.content.Context
+import androidx.compose.remote.creation.first
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.auth0.android.Auth0
@@ -16,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +26,7 @@ data class EstadoUiLogin(
     val estaCargando: Boolean = false,
     val error: String? = null,
     val loginExitoso: Boolean = false,
+    val esUsuarioNuevo: Boolean = false,
     val idUsuario: String? = null,
     val nombreUsuario: String? = null
 )
@@ -53,27 +56,37 @@ class LoginViewModel @Inject constructor(
                 override fun onSuccess(result: Credentials) {
                     viewModelScope.launch {
                         val perfil = result.user
+                        val idUsuario = perfil.getId() ?: perfil.email ?: "sin_id"
 
-                        // Guardamos el usuario en Room con los datos de Auth0
-                        // Si ya existe lo actualiza (onConflict = REPLACE en el DAO)
-                        repositorioUsuario.guardarUsuario(
-                            EntidadUsuario(
-                                idUsuario = perfil.getId() ?: perfil.email ?: "sin_id",
-                                nombre = perfil.name ?: "Usuario",
-                                correo = perfil.email ?: "",
-                                urlFoto = perfil.pictureURL?.toString()
+                        // Comprobamos si el usuario ya existe en nuestra BD
+                        val usuarioExistente = repositorioUsuario
+                            .obtenerUsuario(idUsuario)
+                            .first()
+
+                        val esNuevo = usuarioExistente == null
+
+                        if (esNuevo) {
+                            // Usuario nuevo → guardamos solo los datos de Auth0
+                            repositorioUsuario.guardarUsuario(
+                                EntidadUsuario(
+                                    idUsuario = idUsuario,
+                                    nombre = perfil.name ?: "",
+                                    correo = perfil.email ?: "",
+                                    urlFoto = perfil.pictureURL?.toString()
+                                )
                             )
-                        )
+                        }
 
-                        SesionUsuario.idActual = perfil.getId() ?: perfil.email ?: "sin_id"
-                        SesionUsuario.nombreActual = perfil.name ?: "Usuario"
+                        SesionUsuario.idActual = idUsuario
+                        SesionUsuario.nombreActual = usuarioExistente?.nombre ?: perfil.name ?: ""
                         SesionUsuario.urlFotoActual = perfil.pictureURL?.toString()
 
                         _estado.update {
                             it.copy(
                                 estaCargando = false,
                                 loginExitoso = true,
-                                idUsuario = perfil.getId() ?: perfil.email,
+                                esUsuarioNuevo = esNuevo,
+                                idUsuario = idUsuario,
                                 nombreUsuario = perfil.name
                             )
                         }

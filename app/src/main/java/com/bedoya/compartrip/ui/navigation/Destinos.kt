@@ -4,6 +4,7 @@ package com.bedoya.compartrip.ui.navigation
 // Usamos object para que sean singleton y no se puedan instanciar
 sealed class Destinos(val ruta: String) {
     object Login : Destinos("login")
+    object CompletarPerfil : Destinos("completar_perfil")
     object Home : Destinos("home")
     object DetalleViaje : Destinos("detalle/{idViaje}") {
         // función helper para construir la ruta con el ID real

@@ -15,7 +15,7 @@ import com.bedoya.compartrip.data.local.entity.*
         EntidadResena::class,
         EntidadMensaje::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
     // exportSchema = false → no genera fichero JSON del esquema (lo ponemos a true en producción real)
 )

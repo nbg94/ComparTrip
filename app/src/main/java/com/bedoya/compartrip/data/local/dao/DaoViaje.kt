@@ -30,12 +30,17 @@ interface DaoViaje {
     fun obtenerPorUsuario(idUsuario: String): Flow<List<EntidadViaje>>
 
     @Query("""
-        SELECT * FROM viajes 
+    SELECT * FROM viajes 
         WHERE estado = 'ACTIVO'
-        AND (:destino = '' OR destino LIKE '%' || :destino || '%')
+        AND (
+            :modo = 'DESTINO' AND (:texto = '' OR LOWER(destino) LIKE '%' || LOWER(:texto) || '%')
+            OR :modo = 'ORIGEN' AND (:texto = '' OR LOWER(origen) LIKE '%' || LOWER(:texto) || '%')
+            OR :modo = 'AMBOS' AND (:texto = '' OR LOWER(origen) LIKE '%' || LOWER(:texto) || '%' 
+                OR LOWER(destino) LIKE '%' || LOWER(:texto) || '%')
+            )
         AND (:tipo = '' OR tipo = :tipo)
         ORDER BY creadoEn DESC
     """)
-    fun buscar(destino: String, tipo: String): Flow<List<EntidadViaje>>
+    fun buscar(texto: String, tipo: String, modo: String): Flow<List<EntidadViaje>>
     // busca viajes filtrando por destino y tipo, si están vacíos devuelve todos
 }

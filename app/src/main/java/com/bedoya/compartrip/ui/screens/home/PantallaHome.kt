@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,8 +15,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bedoya.compartrip.ui.screens.HomeViewModel
+import com.bedoya.compartrip.ui.components.CampoAutocompletadoCiudad
 import com.bedoya.compartrip.ui.components.TarjetaViaje
 import com.bedoya.compartrip.ui.components.BarraFiltros
+import com.bedoya.compartrip.ui.theme.VerdeTurquesa
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,18 +55,48 @@ fun PantallaHome(
                 .fillMaxSize()
                 .padding(paddingInterno)
         ) {
-            // Barra de búsqueda
-            OutlinedTextField(
-                value = estado.textoBusqueda,
-                onValueChange = viewModel::alCambiarBusqueda,
-                placeholder = { Text("Buscar destino...") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                singleLine = true
-            )
+// ---- Barra de búsqueda con selector de modo ----
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
 
-            // Chips de filtro
+                // Selector origen/destino/ambos
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(
+                        "ORIGEN" to "Desde",
+                        "DESTINO" to "Hasta",
+                        "AMBOS" to "Cualquiera"
+                    ).forEach { (modo, etiqueta) ->
+                        FilterChip(
+                            selected = estado.modoBusqueda == modo,
+                            onClick = { viewModel.alCambiarModoBusqueda(modo) },
+                            label = { Text(etiqueta, style = MaterialTheme.typography.bodySmall) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Campo de búsqueda
+                CampoAutocompletadoCiudad(
+                    valor = estado.textoBusqueda,
+                    etiqueta = "",
+                    alCambiar = viewModel::alCambiarBusqueda,
+                    alBuscarCiudades = viewModel::buscarCiudades,
+                    modifier = Modifier.fillMaxWidth(),
+                    mostrarIconoBusqueda = true,
+                    mostrarBotonBorrar = true,
+                    placeholder = when (estado.modoBusqueda) {
+                        "ORIGEN" -> "¿Desde dónde sales?"
+                        "DESTINO" -> "¿A dónde vas?"
+                        else -> "Buscar por ciudad..."
+                    }
+                )
+            }
+
+// Chips de filtro tipo
             BarraFiltros(
                 filtroSeleccionado = estado.filtroTipo,
                 alSeleccionarFiltro = viewModel::alCambiarFiltro
@@ -78,6 +112,7 @@ fun PantallaHome(
                         CircularProgressIndicator()
                     }
                 }
+
                 estado.error != null -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -89,6 +124,7 @@ fun PantallaHome(
                         )
                     }
                 }
+
                 estado.viajes.isEmpty() -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -97,6 +133,7 @@ fun PantallaHome(
                         Text("No hay viajes disponibles")
                     }
                 }
+
                 else -> {
                     // LazyColumn → como un RecyclerView pero en Compose
                     // solo renderiza los elementos visibles en pantalla

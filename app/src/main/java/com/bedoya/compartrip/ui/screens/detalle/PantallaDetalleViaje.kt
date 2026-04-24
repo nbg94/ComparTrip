@@ -1,7 +1,10 @@
 package com.bedoya.compartrip.ui.screens.detalle
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,10 +17,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.bedoya.compartrip.domain.model.EstadoViaje
 import com.bedoya.compartrip.domain.model.TipoViaje
 import com.bedoya.compartrip.domain.model.Viaje
@@ -25,12 +31,6 @@ import com.bedoya.compartrip.domain.model.Usuario
 import com.bedoya.compartrip.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +41,6 @@ fun PantallaDetalleViaje(
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
 
-    // Cargamos el viaje cuando se abre la pantalla
     LaunchedEffect(idViaje) {
         viewModel.cargarViaje(idViaje)
     }
@@ -155,38 +154,33 @@ private fun ContenidoDetalle(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // ---- Tarjeta de info rápida ----
+            // ---- Info rápida ----
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
+                    InfoRapida("💺", "${viaje.plazasDisponibles}", "Plazas")
+                    VerticalDivider(modifier = Modifier.height(48.dp))
                     InfoRapida(
-                        icono = "💺",
-                        valor = "${viaje.plazasDisponibles}",
-                        etiqueta = "Plazas"
+                        "💶",
+                        if (viaje.precio != null) "${viaje.precio}€" else "Gratis",
+                        "Precio"
                     )
                     VerticalDivider(modifier = Modifier.height(48.dp))
                     InfoRapida(
-                        icono = "💶",
-                        valor = if (viaje.precio != null) "${viaje.precio}€" else "Gratis",
-                        etiqueta = "Precio"
-                    )
-                    VerticalDivider(modifier = Modifier.height(48.dp))
-                    InfoRapida(
-                        icono = if (viaje.estado == EstadoViaje.ACTIVO) "✅" else "❌",
-                        valor = when (viaje.estado) {
+                        if (viaje.estado == EstadoViaje.ACTIVO) "✅" else "❌",
+                        when (viaje.estado) {
                             EstadoViaje.ACTIVO -> "Disponible"
                             EstadoViaje.COMPLETADO -> "Completo"
                             EstadoViaje.CANCELADO -> "Cancelado"
                         },
-                        etiqueta = "Estado"
+                        "Estado"
                     )
                 }
             }
@@ -213,7 +207,8 @@ private fun ContenidoDetalle(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("🎂 Rango de edad", style = MaterialTheme.typography.bodyMedium)
+                        Text("🎂 Rango de edad",
+                            style = MaterialTheme.typography.bodyMedium)
                         Text(
                             text = "${viaje.edadMinima ?: "?"} - ${viaje.edadMaxima ?: "?"} años",
                             style = MaterialTheme.typography.bodyMedium,
@@ -229,7 +224,6 @@ private fun ContenidoDetalle(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Avatar con inicial del nombre
                     Box(
                         modifier = Modifier
                             .size(48.dp)
@@ -245,8 +239,11 @@ private fun ContenidoDetalle(
                         )
                     }
                     Column {
+                        val nombreMostrar = publicador?.nombre?.let {
+                            if (it.contains("@")) "Usuario Compartrip" else it
+                        } ?: "Usuario"
                         Text(
-                            text = publicador?.nombre ?: "Usuario",
+                            text = nombreMostrar,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -302,8 +299,10 @@ private fun SeccionDetalle(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Text(
                 text = titulo,
                 style = MaterialTheme.typography.titleMedium,
@@ -347,9 +346,10 @@ private fun FilaPreferencia(etiqueta: String, activado: Boolean) {
 private fun CarruselFotos(fotos: List<String>) {
     val pagerState = rememberPagerState(pageCount = { fotos.size })
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(220.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(220.dp)
     ) {
         HorizontalPager(
             state = pagerState,
@@ -362,8 +362,6 @@ private fun CarruselFotos(fotos: List<String>) {
                 contentScale = ContentScale.Crop
             )
         }
-
-        // Puntos indicadores
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

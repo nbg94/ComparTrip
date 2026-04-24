@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bedoya.compartrip.domain.usecase.BuscarViajesUseCase
 import com.bedoya.compartrip.domain.usecase.ObtenerViajesUseCase
+import com.bedoya.compartrip.data.repository.RepositorioCiudades
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     // Hilt inyecta estos casos de uso automáticamente
     private val obtenerViajes: ObtenerViajesUseCase,
-    private val buscarViajes: BuscarViajesUseCase
+    private val buscarViajes: BuscarViajesUseCase,
+    private val repositorioCiudades: RepositorioCiudades
 ) : ViewModel() {
 
     // MutableStateFlow → estado interno que solo el ViewModel puede modificar
@@ -57,17 +59,22 @@ class HomeViewModel @Inject constructor(
 
     fun alCambiarBusqueda(texto: String) {
         _estado.update { it.copy(textoBusqueda = texto) }
-        buscar(texto, _estado.value.filtroTipo)
+        buscar(normalizar(texto), _estado.value.filtroTipo, _estado.value.modoBusqueda)
     }
 
     fun alCambiarFiltro(tipo: String) {
         _estado.update { it.copy(filtroTipo = tipo) }
-        buscar(_estado.value.textoBusqueda, tipo)
+        buscar(_estado.value.textoBusqueda, tipo, _estado.value.modoBusqueda)
     }
 
-    private fun buscar(destino: String, tipo: String) {
+    fun alCambiarModoBusqueda(modo: String) {
+        _estado.update { it.copy(modoBusqueda = modo) }
+        buscar(_estado.value.textoBusqueda, _estado.value.filtroTipo, modo)
+    }
+
+    private fun buscar(texto: String, tipo: String, modo: String) {
         viewModelScope.launch {
-            buscarViajes.ejecutar(destino, tipo)
+            buscarViajes.ejecutar(texto, tipo, modo)
                 .catch { excepcion ->
                     _estado.update { it.copy(error = excepcion.message) }
                 }
@@ -76,4 +83,20 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun normalizar(texto: String): String {
+        return texto.trim()
+            .lowercase()
+            .replace("á", "a")
+            .replace("é", "e")
+            .replace("í", "i")
+            .replace("ó", "o")
+            .replace("ú", "u")
+            .replace("ü", "u")
+            .replace("ñ", "n")
+    }
+
+    suspend fun buscarCiudades(texto: String) =
+        repositorioCiudades.buscarCiudades(texto).getOrDefault(emptyList())
+
 }
