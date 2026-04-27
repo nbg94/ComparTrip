@@ -12,5 +12,8 @@ sealed class Destinos(val ruta: String) {
     }
     object PublicarViaje : Destinos("publicar")
     object Perfil : Destinos("perfil")
+
+    object MisViajes : Destinos("mis_viajes")
+
     object Mensajes : Destinos("mensajes")
 }

@@ -10,6 +10,9 @@ class RepositorioReserva(
     suspend fun insertar(reserva: EntidadReserva) =
         daoReserva.insertar(reserva)
 
+    suspend fun actualizarEstado(reserva: EntidadReserva) =
+        daoReserva.actualizar(reserva)
+
     fun obtenerPorUsuario(idUsuario: String): Flow<List<EntidadReserva>> =
         daoReserva.obtenerPorUsuario(idUsuario)
 
@@ -18,4 +21,8 @@ class RepositorioReserva(
 
     fun obtenerReservaConcreta(idViaje: Int, idUsuario: String): Flow<EntidadReserva?> =
         daoReserva.obtenerReservaConcreta(idViaje, idUsuario)
+
+    // Obtiene las solicitudes recibidas en los viajes que publicó este usuario
+    fun obtenerSolicitudesDeViajes(idPublicador: String): Flow<List<EntidadReserva>> =
+        daoReserva.obtenerSolicitudesPorPublicador(idPublicador)
 }

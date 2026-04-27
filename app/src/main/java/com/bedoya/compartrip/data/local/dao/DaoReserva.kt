@@ -25,4 +25,15 @@ interface DaoReserva {
     @Query("SELECT * FROM reservas WHERE idViaje = :idViaje AND idUsuario = :idUsuario LIMIT 1")
     fun obtenerReservaConcreta(idViaje: Int, idUsuario: String): Flow<EntidadReserva?>
     // LIMIT 1 = solo devuelve un resultado (un usuario solo puede tener una reserva por viaje)
+
+
+    @Query("""
+    SELECT reservas.* FROM reservas 
+    INNER JOIN viajes ON reservas.idViaje = viajes.idViaje
+    WHERE viajes.idPublicador = :idPublicador
+    ORDER BY reservas.solicitadoEn DESC
+""")
+    fun obtenerSolicitudesPorPublicador(idPublicador: String): Flow<List<EntidadReserva>>
+
+
 }

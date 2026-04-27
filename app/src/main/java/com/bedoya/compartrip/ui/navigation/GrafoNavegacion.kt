@@ -12,6 +12,7 @@ import com.bedoya.compartrip.ui.screens.home.PantallaHome
 import com.bedoya.compartrip.ui.screens.login.PantallaLogin
 import com.bedoya.compartrip.ui.screens.publicar.PantallaPublicarViaje
 import com.bedoya.compartrip.ui.screens.detalle.PantallaDetalleViaje
+import com.bedoya.compartrip.ui.screens.misviajes.PantallaMisViajes
 import com.bedoya.compartrip.ui.screens.perfil.PantallaPerfil
 
 @Composable
@@ -60,7 +61,8 @@ fun GrafoNavegacion(
                 },
                 alPulsarPerfil = {
                     controladorNav.navigate(Destinos.Perfil.ruta)
-                }
+                },
+                alPulsarMisViajes = { controladorNav.navigate(Destinos.MisViajes.ruta) }
             )
         }
 
@@ -93,6 +95,15 @@ fun GrafoNavegacion(
                     controladorNav.navigate(Destinos.Login.ruta) {
                         popUpTo(0) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable(Destinos.MisViajes.ruta) {
+            PantallaMisViajes(
+                alVolver = { controladorNav.popBackStack() },
+                alPulsarViaje = { idViaje ->
+                    controladorNav.navigate(Destinos.DetalleViaje.crearRuta(idViaje))
                 }
             )
         }

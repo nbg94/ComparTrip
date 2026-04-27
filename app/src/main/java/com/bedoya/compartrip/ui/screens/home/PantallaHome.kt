@@ -26,6 +26,7 @@ fun PantallaHome(
     alPulsarPublicar: () -> Unit,
     alPulsarViaje: (Int) -> Unit,
     alPulsarPerfil: () -> Unit,
+    alPulsarMisViajes: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
     // hiltViewModel() → Hilt crea e inyecta el ViewModel automáticamente
 ) {
@@ -38,10 +39,20 @@ fun PantallaHome(
             TopAppBar(
                 title = { Text("Compartrip") },
                 actions = {
-                    TextButton(onClick = alPulsarPerfil) {
-                        Text("Perfil")
+                    TextButton(onClick = alPulsarMisViajes) {
+                        Text("Mis viajes",
+                            color = MaterialTheme.colorScheme.onPrimary)
                     }
-                }
+                    TextButton(onClick = alPulsarPerfil) {
+                        Text("Perfil",
+                        color = MaterialTheme.colorScheme.onPrimary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = VerdeTurquesa,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
         },
         floatingActionButton = {
