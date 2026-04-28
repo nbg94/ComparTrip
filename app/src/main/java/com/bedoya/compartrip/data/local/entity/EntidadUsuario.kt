@@ -13,7 +13,7 @@ data class EntidadUsuario(
     val biografia: String? = null,
     val valoracionMedia: Float = 0f,
     val creadoEn: Long = System.currentTimeMillis(),
-    // ---- campos nuevos ----
     val totalViajes: Int = 0,
-    val dniVerificado: Boolean = false
+    val dniVerificado: Boolean = false,
+    val perfilCompleto: Boolean = false
 )

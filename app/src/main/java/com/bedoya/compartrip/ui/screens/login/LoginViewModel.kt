@@ -65,8 +65,10 @@ class LoginViewModel @Inject constructor(
 
                         val esNuevo = usuarioExistente == null
 
+                        val perfilIncompleto = esNuevo || usuarioExistente?.perfilCompleto == false
+
                         if (esNuevo) {
-                            // Usuario nuevo → guardamos solo los datos de Auth0
+                            // Usuario nuevo → guardamos solo los datos de Auth0perfilIncompleto
                             repositorioUsuario.guardarUsuario(
                                 EntidadUsuario(
                                     idUsuario = idUsuario,
@@ -85,7 +87,7 @@ class LoginViewModel @Inject constructor(
                             it.copy(
                                 estaCargando = false,
                                 loginExitoso = true,
-                                esUsuarioNuevo = esNuevo,
+                                esUsuarioNuevo = perfilIncompleto,
                                 idUsuario = idUsuario,
                                 nombreUsuario = perfil.name
                             )

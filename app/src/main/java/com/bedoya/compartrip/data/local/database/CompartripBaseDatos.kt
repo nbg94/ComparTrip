@@ -15,7 +15,7 @@ import com.bedoya.compartrip.data.local.entity.*
         EntidadResena::class,
         EntidadMensaje::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
     // exportSchema = false → no genera fichero JSON del esquema (lo ponemos a true en producción real)
 )
@@ -39,7 +39,9 @@ abstract class CompartripBaseDatos : RoomDatabase() {
                     contexto.applicationContext,
                     CompartripBaseDatos::class.java,
                     "compartrip_bd"         // nombre del archivo de BD en el dispositivo
-                ).build().also { INSTANCIA = it }
+                )
+                    .fallbackToDestructiveMigration(false)
+                    .build().also { INSTANCIA = it }
             }
         }
     }

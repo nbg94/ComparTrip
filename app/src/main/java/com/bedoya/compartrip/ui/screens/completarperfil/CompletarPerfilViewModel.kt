@@ -73,7 +73,8 @@ class CompletarPerfilViewModel @Inject constructor(
                     nombre = nombreCompleto,
                     correo = usuarioExistente?.correo ?: "",
                     urlFoto = _estado.value.urlFotoLocal ?: usuarioExistente?.urlFoto,
-                    biografia = _estado.value.biografia.trim().ifBlank { null }
+                    biografia = _estado.value.biografia.trim().ifBlank { null },
+                    perfilCompleto = true
                 )
 
                 repositorioUsuario.guardarUsuario(entidad)
