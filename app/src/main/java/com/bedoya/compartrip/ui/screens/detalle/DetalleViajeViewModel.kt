@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bedoya.compartrip.ConfiguracionApi
 import com.bedoya.compartrip.SesionUsuario
+import com.bedoya.compartrip.data.repository.RepositorioReserva
 import com.bedoya.compartrip.data.repository.RepositorioRutas
 import com.bedoya.compartrip.data.repository.RepositorioUsuario
 import com.bedoya.compartrip.data.repository.RepositorioViaje
@@ -22,7 +23,8 @@ class DetalleViajeViewModel @Inject constructor(
     private val repositorioViaje: RepositorioViaje,
     private val repositorioUsuario: RepositorioUsuario,
     private val repositorioRutas: RepositorioRutas,
-    private val solicitarViaje: SolicitarViajeUseCase
+    private val solicitarViaje: SolicitarViajeUseCase,
+    private val repositorioReserva: RepositorioReserva
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow(EstadoUiDetalle())
@@ -42,6 +44,19 @@ class DetalleViajeViewModel @Inject constructor(
                     _estado.update { it.copy(publicador = usuarioEntidad?.aDominio()) }
                 }
             }
+        }
+
+        viewModelScope.launch {
+            repositorioReserva.obtenerReservaConcreta(idViaje, SesionUsuario.idActual)
+                .collect { reserva ->
+                    val estadoSolicitud = when (reserva?.estado) {
+                        "PENDIENTE" -> EstadoSolicitud.PENDIENTE
+                        "ACEPTADA" -> EstadoSolicitud.ACEPTADA
+                        "RECHAZADA" -> EstadoSolicitud.RECHAZADA
+                        else -> EstadoSolicitud.SIN_SOLICITAR
+                    }
+                    _estado.update { it.copy(estadoSolicitud = estadoSolicitud) }
+                }
         }
     }
 

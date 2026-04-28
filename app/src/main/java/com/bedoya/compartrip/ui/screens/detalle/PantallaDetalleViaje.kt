@@ -40,6 +40,7 @@ import java.util.*
 fun PantallaDetalleViaje(
     idViaje: Int,
     alVolver: () -> Unit,
+    alContactar: (String) -> Unit,
     viewModel: DetalleViajeViewModel = hiltViewModel()
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
@@ -115,7 +116,8 @@ fun PantallaDetalleViaje(
                     publicador = estado.publicador,
                     estado = estado,
                     paddingInterno = paddingInterno,
-                    alSolicitarUnirse = viewModel::alPulsarSolicitarUnirse
+                    alSolicitarUnirse = viewModel::alPulsarSolicitarUnirse,
+                    alContactar = { alContactar(estado.viaje!!.idPublicador) }
                 )
             }
         }
@@ -128,7 +130,8 @@ private fun ContenidoDetalle(
     publicador: Usuario?,
     estado: EstadoUiDetalle,
     paddingInterno: PaddingValues,
-    alSolicitarUnirse: () -> Unit
+    alSolicitarUnirse: () -> Unit,
+    alContactar: () -> Unit
 ) {
     val formato = SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es-ES"))
 
@@ -372,7 +375,7 @@ private fun ContenidoDetalle(
             }
 
             OutlinedButton(
-                onClick = { /* TODO: chat */ },
+                onClick = alContactar,    // ← en vez del TODO
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -529,3 +532,4 @@ private fun TarjetaRuta(distanciaKm: Double, duracionMinutos: Double) {
         }
     }
 }
+

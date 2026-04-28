@@ -1,5 +1,6 @@
 package com.bedoya.compartrip.di
 
+import com.bedoya.compartrip.data.local.dao.DaoMensaje
 import com.bedoya.compartrip.data.local.dao.DaoUsuario
 import com.bedoya.compartrip.data.local.dao.DaoViaje
 import com.bedoya.compartrip.data.remote.api.ServicioApi
@@ -8,6 +9,7 @@ import com.bedoya.compartrip.data.repository.RepositorioRutas
 import com.bedoya.compartrip.data.repository.RepositorioUsuario
 import com.bedoya.compartrip.data.repository.RepositorioViaje
 import com.bedoya.compartrip.data.local.dao.DaoReserva
+import com.bedoya.compartrip.data.repository.RepositorioMensaje
 import com.bedoya.compartrip.data.repository.RepositorioReserva
 import dagger.Module
 import dagger.Provides
@@ -47,4 +49,12 @@ object ModuloRepositorio {
     fun proveerRepositorioReserva(
         daoReserva: DaoReserva
     ): RepositorioReserva = RepositorioReserva(daoReserva)
+
+    @Provides
+    @Singleton
+    fun proveerRepositorioMensaje(
+        daoMensaje: DaoMensaje
+    ): RepositorioMensaje = RepositorioMensaje(daoMensaje)
+
+
 }

@@ -38,7 +38,6 @@ import com.bedoya.compartrip.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaPerfil(
-    alVolver: () -> Unit,
     alCerrarSesion: () -> Unit,
     viewModel: PerfilViewModel = hiltViewModel()
 ) {
@@ -118,11 +117,6 @@ fun PantallaPerfil(
         topBar = {
             TopAppBar(
                 title = { Text("Mi perfil") },
-                navigationIcon = {
-                    IconButton(onClick = alVolver) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = VerdeTurquesa,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,

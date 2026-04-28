@@ -24,7 +24,6 @@ import com.bedoya.compartrip.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaMisViajes(
-    alVolver: () -> Unit,
     alPulsarViaje: (Int) -> Unit,
     viewModel: MisViajesViewModel = hiltViewModel()
 ) {
@@ -35,11 +34,6 @@ fun PantallaMisViajes(
         topBar = {
             TopAppBar(
                 title = { Text("Mis Viajes") },
-                navigationIcon = {
-                    IconButton(onClick = alVolver) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = VerdeTurquesa,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,

@@ -79,7 +79,7 @@ class LoginViewModel @Inject constructor(
 
                         SesionUsuario.idActual = idUsuario
                         SesionUsuario.nombreActual = usuarioExistente?.nombre ?: perfil.name ?: ""
-                        SesionUsuario.urlFotoActual = perfil.pictureURL?.toString()
+                        SesionUsuario.urlFotoActual = perfil.pictureURL?.toString() ?: ""
 
                         _estado.update {
                             it.copy(

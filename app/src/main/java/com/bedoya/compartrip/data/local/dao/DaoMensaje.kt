@@ -26,4 +26,11 @@ interface DaoMensaje {
 
     @Query("UPDATE mensajes SET leido = 1 WHERE idViaje = :idViaje AND idReceptor = :idUsuario")
     suspend fun marcarComoLeidos(idViaje: Int, idUsuario: String)
+
+    @Query("""
+    SELECT * FROM mensajes 
+    WHERE idEmisor = :idUsuario OR idReceptor = :idUsuario
+    ORDER BY enviadoEn DESC
+""")
+    fun obtenerConversacionesDeUsuario(idUsuario: String): Flow<List<EntidadMensaje>>
 }

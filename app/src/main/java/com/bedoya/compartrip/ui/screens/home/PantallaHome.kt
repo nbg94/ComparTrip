@@ -25,8 +25,6 @@ import com.bedoya.compartrip.ui.theme.VerdeTurquesa
 fun PantallaHome(
     alPulsarPublicar: () -> Unit,
     alPulsarViaje: (Int) -> Unit,
-    alPulsarPerfil: () -> Unit,
-    alPulsarMisViajes: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
     // hiltViewModel() → Hilt crea e inyecta el ViewModel automáticamente
 ) {
@@ -38,16 +36,6 @@ fun PantallaHome(
         topBar = {
             TopAppBar(
                 title = { Text("Compartrip") },
-                actions = {
-                    TextButton(onClick = alPulsarMisViajes) {
-                        Text("Mis viajes",
-                            color = MaterialTheme.colorScheme.onPrimary)
-                    }
-                    TextButton(onClick = alPulsarPerfil) {
-                        Text("Perfil",
-                        color = MaterialTheme.colorScheme.onPrimary)
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = VerdeTurquesa,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
